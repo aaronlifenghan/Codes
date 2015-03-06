@@ -1,0 +1,111 @@
+#!/usr/bin/perl -w  
+########################################################################################################################################################################################
+##    For a detailed description of this evaluation metric and source code, please read:                                                                                           #####
+##    This code is to implement the Machine Translation Evaluation metric hLEPOR                                                                                                   #####
+##    hLEPOR evaluation metric is proposed by Aaron Li-Feng Han, Derek F. Wong, Lidia S. Chao, Liangye He, Yi Lu, Junwen Xing and Xiaodong Zeng in University of Macau             #####
+##    This perl code is  written by Aaron Li-Feng Han in university of macau, 2013.04                                                                                              #####
+##    All Copyright (c) preserved by the authors. Corresponding author: Aaron Li-Feng Han < hanlifengaaron@gmail.com >                                                             #####
+##    Please cite paper below if you use the metric or source code in your research work                                                                                           #####
+##    "Language-independent Model for Machine Translation Evaluation with Reinforced Factors". 2013. Aaron Li-Feng Han, Derek F. Wong, Lidia S. Chao, Liangye He, Yi Lu,           #####
+##    Junwen Xing and Xiaodong Zeng. Proceedings of the Machine Translation Summit XIV, Nice, France. International Association for Machine Translation.                           #####
+##    Source code website: https://github.com/aaronlifenghan/aaron-project-hlepor                                                                                                  #####
+##    Online paper: http://www.mtsummit2013.info/programme.asp                                                                                                                     #####
+########################################################################################################################################################################################
+##    How to use this Perl code and how to assign the weights of sub-factors, e.g. Precision, Recall, Length penalty, Position difference penalty, et.                             #####
+##    1. Your system output translation documents and the reference translation document should contain the plain text only, each line containing one sentence.                    #####
+##    2. Put you system output translation documents under the address in Line 23, 53, 55 of this Perl code.                                                                       #####
+##    3. Put you reference translation document under the address in Line 27 of this Perl code.                                                                                    #####
+##    4. Tune the alpha:beta(Recall:Precision) weights in Line 176; Tune the HPR:ELP:NPP weights in Line 369-371 of this Perl code.                                                #####
+##    5. The document containing evaluation score of hLEPOR will be shown under the address in Line 57 of this Perl code.                                                          #####
+##                                                                                                                                                                                 #####
+########################################################################################################################################################################################
+
+
+# #open E1,"<:encoding(utf8)","Test-content-lm.txt"; ## put the address of language model file p(e1) here
+# open E1,"<:encoding(utf8)","news-commentary-v8.fr-en.arpa copy.en"; ## put the address of language model file p(e1) here
+
+# 		$E1_length=0;
+# 		$str_tem="";
+# 		@arry_tem=();
+# 		@arry_str_leng=();
+# 		@arrytwo_E1_file=();
+# 		$num_of_E1_line=0;
+
+# 		while($str_tem=<E1>)
+# 			{
+# 				chomp($str_tem);
+# 				@arry_tem=split(/\t+/, $str_tem);
+# 				push @arrytwo_E1_file, [@arry_tem];
+# 				@arry_tem=();
+# 				$num_of_E1_line++;	
+
+
+# 			}
+# close E1;
+
+
+# open (RESULT, ">:encoding(utf8)", "Test-storage-lm-2.txt") || die "$!"; ## put the address of evaluation results documents here 
+
+# 							for($j=0;$j<$num_of_E1_line;$j++)
+# 							{
+# 								for($k=0;$k<=1;$k++)
+# 									{
+# 										print RESULT $arrytwo_E1_file[$j][$k], ' -- ';
+# #										print RESULT $arrytwo_E1_file[$j][$k], ' -- ';
+
+
+
+# 									}
+# 									print RESULT "\n";
+# 							}
+
+
+# close RESULT;
+
+######################################################### 
+# open PhraseT,"<:encoding(utf8)","Test-content-phraseT.txt"; ## put the address of phrase table file p(e|f) and reverse here
+
+# open PhraseT,"<:encoding(utf8)","Seg-phrase-tableaa"; ## put the address of phrase table file p(e|f) and reverse here
+
+open PhraseT,"<:encoding(utf8)","sorted_with_counts"; ## put the address of phrase table file p(e|f) and reverse here
+
+open ResultF,">:encoding(utf8)","sorted_with_counts-clear"; ## put the address of phrase table file p(e|f) and reverse here
+
+
+	$str_tem_input="";
+
+	while($str_tem_input=<PhraseT>)
+		{        # replace 'num' with 'num+tab'
+			 $str_tem_input =~ s/\d+/$& \t/o;  # '/o' mean only replace once, i.e. the begining number
+#wrong			 $str_tem_input =~ s/\d/$& \t/o;  # '/o' mean only replace once, i.e. the begining number
+#	wrong		 $str_tem_input =~ s/\d/\d\t/o;  # '/o' mean only replace once, i.e. the begining number
+#		wrong	 $str_tem_input =~ tr/\d/\d\t/o;  # '/o' mean only replace once, i.e. the begining number
+			 $str_tem_input =~ s/\|\|\|/\t/;  # '/o' mean only replace once, i.e. the begining number
+
+			 print ResultF $str_tem_input;
+			 $str_tem_input="";
+
+		}
+
+
+
+	# $str_tem_input="";
+	# @arry_tem_store=();
+
+
+	# while($str_tem_input=<PhraseT>)
+	# 	{
+	# 		chomp($str_tem_input);
+	# 		@arry_tem_store=split(/\s+\|\|\|\s+/, $str_tem_input);
+	# 		print ResultF $arry_tem_store[0], ' ||| ', $arry_tem_store[1], ' ||| ', $arry_tem_store[3], "\n";
+
+
+	# 	}
+
+
+
+close PhraseT;
+close ResultF;
+
+
+
