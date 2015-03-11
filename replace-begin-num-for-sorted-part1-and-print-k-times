@@ -1,0 +1,38 @@
+#!/usr/bin/perl -w  
+########################################################################################################################################################################################
+## replace begining num into 'num |||', and print the file line by line into new file; print k times of the line if begining num=k.                                                                                                                                                                                 #####
+########################################################################################################################################################################################
+
+
+open PhraseT,"<:encoding(utf8)","sorted_with_counts_part1"; ## put the address of phrase table file p(e|f) and reverse here
+
+open ResultF,">:encoding(utf8)","sorted_with_counts_part1-print"; ## put the address of phrase table file p(e|f) and reverse here
+
+
+	$str_tem_input="";
+	@arry_tem=();
+
+	while($str_tem_input=<PhraseT>)
+		{        # replace 'num' with 'num+|||'
+#			chomp($str_tem_input);
+			$str_tem_input =~ s/\d+/$& \|\|\| /o;  # '/o' mean only replace once, i.e. the begining number
+#wrong			 $str_tem_input =~ s/\d/$& \t/o;  # '/o' mean only replace once, i.e. the begining number
+#	wrong		 $str_tem_input =~ s/\d/\d\t/o;  # '/o' mean only replace once, i.e. the begining number
+#		wrong	 $str_tem_input =~ tr/\d/\d\t/o;  # '/o' mean only replace once, i.e. the begining number
+#			 $str_tem_input =~ s/\|\|\|/\t/;  # '/o' mean only replace once, i.e. the begining number
+
+			@arry_tem=split(/\s+\|\|\|\s+/, $str_tem_input); 
+
+			for (1 .. $arry_tem[0]) {print ResultF $str_tem_input}; # the begin number of the line is the co-occurence k
+
+#			 print ResultF $str_tem_input;
+			 $str_tem_input="";
+			 @arry_tem=();
+
+		}
+
+
+close PhraseT;
+close ResultF;
+
+
