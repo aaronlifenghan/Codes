@@ -1,0 +1,57 @@
+#!/usr/bin/perl -w    #######using the call-function to calculate the Spearman's rank correlation coefficient...._UMAC
+use utf8;  
+#use Encode;  
+#use Encode::CN;
+#use strict;
+
+
+############## fun_Spearman_Coe_Rank_fr_en_eur_bleu ############################################################################################################
+open TEST,"<:encoding(utf8)","download_wmt08-human-and-automatic-ranks.txt" or die "can't open download_wmt08-human-and-automatic-ranks.txt\n";
+open Fun_Spearman_coefficient_RESULT,">:encoding(utf8)","fun_Spearman_Coe_Rank_fr_en_eur_bleu.txt" or die "can't open fun_Spearman_Coe_Rank_fr_en_eur_bleu.txt\n";
+
+while($str_line=<TEST>)  #### select out rank_fr_en_eruop and bleu_fr_en_eruop  #### read the original file line by line
+ {
+  chomp($str_line);
+  @arry_temp= split(/\t+/,$str_line);
+  if (($arry_temp[0] eq "Rank")&&($arry_temp[1] eq "fr-en")&&($arry_temp[2] eq "test2008"))
+   {
+    $Rank_fr_en_euro{$arry_temp[3]}= $arry_temp[4];      ####put the system_name and value into Hash
+   }
+  elsif(($arry_temp[0] eq "bleu")&&($arry_temp[1] eq "fr-en")&&($arry_temp[2] eq "test2008"))
+   {
+    $Bleu_fr_en_euro{$arry_temp[3]}= $arry_temp[4];
+   }
+ }
+foreach $key (sort keys %Rank_fr_en_euro) #### put the keys into order then print out key-value
+ {
+  print Fun_Spearman_coefficient_RESULT 'the rank of fr-en euro :'. "$key => $Rank_fr_en_euro{$key}\n";
+ }
+foreach $key (sort keys %Bleu_fr_en_euro)
+ {
+  print Fun_Spearman_coefficient_RESULT 'the bleu of fr-en euro :'. "$key => $Bleu_fr_en_euro{$key}\n";
+ }
+
+$k=0;
+$Dis_bleu_rank_fr_en_euro=0;
+foreach $key (%Rank_fr_en_euro)    #### go through two Hash, calculate Spearman coefficient with the value with the same key
+ {
+  if(exists $Bleu_fr_en_euro{$key})
+   {
+    $store[$k]=$key;  ####store the same keys into array @store, then print out to check 
+    $Dis_bleu_rank_fr_en_euro= $Dis_bleu_rank_fr_en_euro+($Rank_fr_en_euro{$key}-$Bleu_fr_en_euro{$key})*($Rank_fr_en_euro{$key}-$Bleu_fr_en_euro{$key});
+    $k++;
+   }
+ }
+$Spearman_coe_bleu_rank_fr_en_euro= 1-(6*$Dis_bleu_rank_fr_en_euro/($k*$k*$k-$k));
+@store= sort(@store); #### put the keys stored in the @store into order
+for($i=0; $i< $k; $i++)
+ {
+  $key=$store[$i]; #### put the same keys in the @store out one by one
+  print Fun_Spearman_coefficient_RESULT 'the rank--bleu of fr-en euro:'."$key => $Rank_fr_en_euro{$key}".'--'."$key => $Bleu_fr_en_euro{$key}\n";
+ }
+print Fun_Spearman_coefficient_RESULT 'the Spearman_coefficient_rank_bleu_fr_en_euro:'. $Spearman_coe_bleu_rank_fr_en_euro."\n";
+
+close TEST;
+close Fun_Spearman_coefficient_RESULT;
+######################################################################################################################################
+
