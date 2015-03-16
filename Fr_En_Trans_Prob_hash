@@ -24,7 +24,7 @@ open TEST_FR,">:encoding(utf8)","sorted_left-print_TEST_hash" or die "can't open
 		}
 
 
-	foreach $key (sort keys %FR_coocur_hash) #### put the keys into order then print out key-value
+	foreach $key (sort keys %FR_coocur_hash) #### put the keys into order then print out key-value, check the fr hash
 		{
   			print TEST_FR 'the co-ccur of fr :'. "$key => $FR_coocur_hash{$key}\n";
  		}
@@ -39,11 +39,11 @@ close TEST_FR;
 
 
 
-open FR_EN,"<:encoding(utf8)","sorted_with_counts-clear-2"; ## put the french co-occurance file
+open FR_EN,"<:encoding(utf8)","sorted_with_counts-clear-2"; ## put the french-en co-occurance file. 'co-ocur ||| fr ||| en'
 	$str_tem2="";
 	@arry_tem2=();
 
-	while($str_tem2=<FR_EN>)    # it looks like '5 ||| french'
+	while($str_tem2=<FR_EN>)    # 'co-ocur ||| fr ||| en'
 		{
 			chomp($str_tem2);
 			@arry_tem2=split(/\s+\|\|\|\s+/, $str_tem2);
@@ -56,7 +56,7 @@ open FR_EN,"<:encoding(utf8)","sorted_with_counts-clear-2"; ## put the french co
 
 open TEST_FR_EN,">:encoding(utf8)","sorted_with_counts-clear-2_TEST_hash" or die "can't open fun_Spearman_Coe_Rank_fr_en_eur_bleu.txt\n";
 
-	foreach $key (sort keys %FR_EN_coocur_hash) #### put the keys into order then print out key-value
+	foreach $key (sort keys %FR_EN_coocur_hash) #### put the keys into order then print out key-value, check the fr-en hash
 		{
   			print TEST_FR_EN 'the co-ccur of fr_en :'. "$key => $FR_EN_coocur_hash{$key}\n";
  		}
@@ -71,7 +71,7 @@ open OUTPUT,">:encoding(utf8)","FR_EN_trans_Prob" or die "can't open fr-en-trans
 	@arry_tem3=();
 	$prob_fr_en=0;
 
-	foreach $key (%FR_EN_coocur_hash)    #### go through two Hash, calculate Spearman coefficient with the value with the same key
+	foreach $key (%FR_EN_coocur_hash)    #### go through two Hash, calculate translation probability fr-to-en 
 	 	{
 	 		@arry_tem3=split(/\s+\|\|\|\s+/, $key);
 	 		if(exists $FR_coocur_hash{$arry_tem3[0]})
@@ -82,3 +82,5 @@ open OUTPUT,">:encoding(utf8)","FR_EN_trans_Prob" or die "can't open fr-en-trans
 	 			}
 	 	}
 close OUTPUT;
+
+
