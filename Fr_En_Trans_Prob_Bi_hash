@@ -1,0 +1,146 @@
+#!/usr/bin/perl -w  
+########################################################################################################################################################################################
+## use hash to visit the phrases; calculate the probability                                                                                                                                                                                 #####
+########################################################################################################################################################################################
+
+# # sorted_left-print
+
+open FR,"<:encoding(utf8)","sorted_left-print"; ## put the french co-occurance file
+
+open TEST_FR,">:encoding(utf8)","sorted_left-print_TEST_hash" or die "can't open fun_Spearman_Coe_Rank_fr_en_eur_bleu.txt\n";
+
+	$str_tem="";
+	@arry_tem=();
+
+	while($str_tem=<FR>)    # it looks like '5 ||| french'
+		{
+			chomp($str_tem);
+			@arry_tem=split(/\s+\|\|\|\s+/, $str_tem);
+			$FR_coocur_hash{$arry_tem[1]}= $arry_tem[0];   # key is the 'french', value is the num
+
+			$str_tem="";
+			@arry_tem=();
+
+		}
+
+
+	foreach $key (sort keys %FR_coocur_hash) #### put the keys into order then print out key-value, check the fr hash
+		{
+  			print TEST_FR 'the co-ccur of fr :'. "$key => $FR_coocur_hash{$key}\n";
+ 		}
+
+
+
+close FR;
+
+close TEST_FR;
+
+
+
+
+
+
+open EN,"<:encoding(utf8)","count_right_en"; ## put the english co-occurance file
+
+open TEST_EN,">:encoding(utf8)","count_right_en_TEST_hash" or die "can't open count_right_en.txt\n";
+
+	$str_tem_en="";
+	@arry_tem_en=();
+
+	while($str_tem_en=<EN>)    # it looks like '5  eng'
+		{
+			chomp($str_tem_en);
+			$str_tem_en =~ s/\d+/$& \|\|\| /o;
+			@arry_tem_en=split(/\s+\|\|\|\s+/, $str_tem_en);
+			$EN_coocur_hash{$arry_tem_en[1]}= $arry_tem_en[0];   # key is the 'english', value is the num
+
+			$str_tem_en="";
+			@arry_tem_en=();
+
+		}
+
+
+	foreach $key (sort keys %EN_coocur_hash) #### put the keys into order then print out key-value, check the english hash
+		{
+  			print TEST_EN 'the co-ccur of en :'. "$key => $EN_coocur_hash{$key}\n";
+ 		}
+
+
+
+close EN;
+
+close TEST_EN;
+
+
+
+
+
+
+
+open FR_EN,"<:encoding(utf8)","sorted_with_counts-clear-2"; ## put the french-en co-occurance file. 'co-ocur ||| fr ||| en'
+	$str_tem2="";
+	@arry_tem2=();
+
+	while($str_tem2=<FR_EN>)    # 'co-ocur ||| fr ||| en'
+		{
+			chomp($str_tem2);
+			@arry_tem2=split(/\s+\|\|\|\s+/, $str_tem2);
+			$FR_EN_coocur_hash{$arry_tem2[1].' ||| '.$arry_tem2[2]}= $arry_tem2[0];   # key is the 'french ||| english', value is the num
+
+			$str_tem2="";
+			@arry_tem2=();
+
+		}
+
+open TEST_FR_EN,">:encoding(utf8)","sorted_with_counts-clear-2_TEST_hash" or die "can't open fun_Spearman_Coe_Rank_fr_en_eur_bleu.txt\n";
+
+	foreach $key (sort keys %FR_EN_coocur_hash) #### put the keys into order then print out key-value, check the fr-en hash
+		{
+  			print TEST_FR_EN 'the co-ccur of fr_en :'. "$key => $FR_EN_coocur_hash{$key}\n";
+ 		}
+close TEST_FR_EN;
+
+close FR_EN;
+
+
+
+open OUTPUT,">:encoding(utf8)","FR_EN_trans_Prob_Bi" or die "can't open fr-en-trans-prob\n";
+	@arry_tem3=();
+	$prob_fr_en=0;
+	$prob_en_fr=0;
+
+	foreach $key (%FR_EN_coocur_hash)    #### go through two Hash, calculate translation probability fr-to-en 
+	 	{
+	 		@arry_tem3=split(/\s+\|\|\|\s+/, $key);
+	 		if((exists $FR_coocur_hash{$arry_tem3[0]}) && (exists $EN_coocur_hash{$arry_tem3[1]}))
+	 			{
+					$prob_fr_en= $FR_EN_coocur_hash{$key}/$FR_coocur_hash{$arry_tem3[0]};					
+	 				$prob_en_fr= $FR_EN_coocur_hash{$key}/$EN_coocur_hash{$arry_tem3[1]};					
+	 				
+	 				print OUTPUT "$key ||| $prob_fr_en ||| $prob_en_fr \n";
+	 				$prob_fr_en=0;
+	 				$prob_en_fr=0;
+	 			}
+	 	}
+close OUTPUT;
+
+
+
+## use below code, if only want to gain single direction translation prob fr-to-en
+
+# open OUTPUT,">:encoding(utf8)","FR_EN_trans_Prob" or die "can't open fr-en-trans-prob\n";
+# 	@arry_tem3=();
+# 	$prob_fr_en=0;
+
+# 	foreach $key (%FR_EN_coocur_hash)    #### go through two Hash, calculate translation probability fr-to-en 
+# 	 	{
+# 	 		@arry_tem3=split(/\s+\|\|\|\s+/, $key);
+# 	 		if(exists $FR_coocur_hash{$arry_tem3[0]})
+# 	 			{
+# 					$prob_fr_en= $FR_EN_coocur_hash{$key}/$FR_coocur_hash{$arry_tem3[0]};					
+# 	 				print OUTPUT "$key ||| $prob_fr_en \n";
+# 	 				$prob_fr_en=0;
+# 	 			}
+# 	 	}
+# close OUTPUT;
+
