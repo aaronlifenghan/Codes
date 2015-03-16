@@ -103,13 +103,15 @@ close TEST_FR_EN;
 close FR_EN;
 
 
+## use belwo code if want to gain bidirection probability 
 
 open OUTPUT,">:encoding(utf8)","FR_EN_trans_Prob_Bi" or die "can't open fr-en-trans-prob\n";
 	@arry_tem3=();
 	$prob_fr_en=0;
 	$prob_en_fr=0;
 
-	foreach $key (%FR_EN_coocur_hash)    #### go through two Hash, calculate translation probability fr-to-en 
+#	foreach $key (%FR_EN_coocur_hash)    #### go through two Hash, calculate translation probability fr-to-en 
+	foreach $key (sort keys %FR_EN_coocur_hash)    #### go through two Hash, calculate translation probability fr-to-en 
 	 	{
 	 		@arry_tem3=split(/\s+\|\|\|\s+/, $key);
 	 		if((exists $FR_coocur_hash{$arry_tem3[0]}) && (exists $EN_coocur_hash{$arry_tem3[1]}))
@@ -117,7 +119,7 @@ open OUTPUT,">:encoding(utf8)","FR_EN_trans_Prob_Bi" or die "can't open fr-en-tr
 					$prob_fr_en= $FR_EN_coocur_hash{$key}/$FR_coocur_hash{$arry_tem3[0]};					
 	 				$prob_en_fr= $FR_EN_coocur_hash{$key}/$EN_coocur_hash{$arry_tem3[1]};					
 	 				
-	 				print OUTPUT "$key ||| $prob_fr_en ||| $prob_en_fr \n";
+	 				print OUTPUT "$key ||| $prob_fr_en ||| $prob_en_fr \n";  # fr ||| en ||| fr-to-en prob ||| en-to-fr Prob
 	 				$prob_fr_en=0;
 	 				$prob_en_fr=0;
 	 			}
@@ -132,7 +134,7 @@ close OUTPUT;
 # 	@arry_tem3=();
 # 	$prob_fr_en=0;
 
-# 	foreach $key (%FR_EN_coocur_hash)    #### go through two Hash, calculate translation probability fr-to-en 
+# 	foreach $key (sort keys %FR_EN_coocur_hash)    #### go through two Hash, calculate translation probability fr-to-en 
 # 	 	{
 # 	 		@arry_tem3=split(/\s+\|\|\|\s+/, $key);
 # 	 		if(exists $FR_coocur_hash{$arry_tem3[0]})
@@ -143,4 +145,5 @@ close OUTPUT;
 # 	 			}
 # 	 	}
 # close OUTPUT;
+
 
