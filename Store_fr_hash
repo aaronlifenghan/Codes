@@ -1,0 +1,37 @@
+#!/usr/bin/perl -w  
+########################################################################################################################################################################################
+## use hash to visit the phrases; calculate the probability                                                                                                                                                                                 #####
+########################################################################################################################################################################################
+
+# sorted_left-print
+
+open FR,"<:encoding(utf8)","sorted_left-print"; ## put the french co-occurance file
+
+open TEST_FR,">:encoding(utf8)","sorted_left-print_TEST_hash" or die "can't open fun_Spearman_Coe_Rank_fr_en_eur_bleu.txt\n";
+
+	$str_tem="";
+	@arry_tem=();
+
+	while($str_tem=<FR>)    # it looks like '5 ||| french'
+		{
+			chomp($str_tem);
+			@arry_tem=split(/\s+\|\|\|\s+/, $str_tem);
+			$FR_coocur_hash{$arry_tem[1]}= $arry_tem[0];   # key is the 'french', value is the num
+
+			$str_tem="";
+			@arry_tem=();
+
+		}
+
+
+	foreach $key (sort keys %FR_coocur_hash) #### put the keys into order then print out key-value
+		{
+  			print TEST_FR 'the co-ccur of fr :'. "$key => $FR_coocur_hash{$key}\n";
+ 		}
+
+
+
+close FR;
+
+close TEST_FR;
+
