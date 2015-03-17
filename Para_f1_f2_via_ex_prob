@@ -1,0 +1,94 @@
+#!/usr/bin/perl -w  
+########################################################################################################################################################################################
+## calculate the monolingual paraphrase prob from the phrase table. f1 ||| f2 ||| ex ||| prob
+## writen by Aaron Han @ ILLC, UvA                                                                                                                                                                             #####
+########################################################################################################################################################################################
+
+# # sorted_left-print
+
+open PhraseT,"<:encoding(utf8)","FR_EN_trans_Prob_Bi"; ## put the phrase table file
+
+## open TEST_PhraseT,">:encoding(utf8)","FR_EN_trans_Prob_Bi_TEST_arry" or die "can't open \n";
+open FrMonoParaphrase,">:encoding(utf8)","FrMonoParaphrase_Prob" or die "can't open \n";
+
+	$str_tem="";
+	@arry_tem=();
+	@arrytwo_PhraseT_file=();
+	$PhraseT_length=0;
+	$PhraseT_length_count=0;
+
+	while($str_tem=<PhraseT>)    # it looks like 'french ||| en ||| fr-en pro ||| en-fr pro'
+		{
+			chomp($str_tem);
+			@arry_tem=split(/\s+\|\|\|\s+/, $str_tem);
+			push @arrytwo_PhraseT_file, [@arry_tem];
+			$PhraseT_length_count++;
+
+			@arry_tem=();
+			$str_tem="";
+
+		}
+	$PhraseT_length= $PhraseT_length_count;
+
+
+
+	$tem_fr_1="";
+	$tem_fr_2="";
+	$tem_en_x="";
+	$Prob_fr1_fr2=0;  ## given f1, the paraprhase prob of (f1, f2) pair, i.e. P(f2|f1);
+#	@record_f1_arry=();   ## because in phrase table the f1 will continuously appear many times; we just select f1 once, with all other f2 prob;
+
+
+	for($i=0;$i<$PhraseT_length;$i++) 
+		{
+			$tem_fr_1=$arrytwo_PhraseT_file[$i][0];   ## from top to down, go through all possible fr
+			
+			# if(!( grep(/^$tem_fr_1/,@record_f1_arry) ))  ## if f1 has not been 
+			# 	{
+			# 		push @record_f1_arry, $tem_fr_1; 
+			# 	}
+
+			
+
+			for($j=0;$j<$PhraseT_length;$j++)
+				{
+					if(($arrytwo_PhraseT_file[$i][0] ne $arrytwo_PhraseT_file[$j][0]) && ($arrytwo_PhraseT_file[$i][1] eq $arrytwo_PhraseT_file[$j][1]))
+					## if F1!=F2, but E1==E2, then, there is paraphrase pair (f1, f2), and we shall calculate the prob
+						{
+							$tem_fr_2=$arrytwo_PhraseT_file[$j][0];  ## store the f2, with paraphrase prob between f1
+							$tem_en_x=$arrytwo_PhraseT_file[$j][1];
+							$Prob_fr1_fr2= $arrytwo_PhraseT_file[$i][2]*$arrytwo_PhraseT_file[$j][3];
+#							$Prob_fr1_fr2=$Prob_fr1_fr2 + $arrytwo_PhraseT_file[$i][2]*$arrytwo_PhraseT_file[$j][3];
+
+						}
+
+
+					print FrMonoParaphrase $tem_fr_1, ' ||| ', $tem_fr_2, ' ||| ', $tem_en_x, ' ||| ', $Prob_fr1_fr2, "\n";
+
+
+
+
+
+
+##					print TEST_PhraseT "$arrytwo_PhraseT_file[$i][$j]", ' || ';
+
+				}
+##			print TEST_PhraseT "\n";
+
+		}
+
+
+	# for($i=0;$i<$PhraseT_length;$i++)    ## this is to test the stroed two dimention arry of phrase table infor
+	# 	{
+	# 		for($j=0;$j<4;$j++)
+	# 			{
+	# 				print TEST_PhraseT "$arrytwo_PhraseT_file[$i][$j]", ' || ';
+
+	# 			}
+	# 		print TEST_PhraseT "\n";
+	# 	}
+
+
+close PhraseT;
+
+close FrMonoParaphrase;
