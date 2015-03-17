@@ -1,0 +1,46 @@
+#!/usr/bin/perl -w  
+########################################################################################################################################################################################
+## calculate the monolingual paraphrase prob from the phrase table  
+## writen by Aaron Han @ ILLC, UvA                                                                                                                                                                             #####
+########################################################################################################################################################################################
+
+# # sorted_left-print
+
+open PhraseT,"<:encoding(utf8)","FR_EN_trans_Prob_Bi"; ## put the phrase table file
+
+open TEST_PhraseT,">:encoding(utf8)","FR_EN_trans_Prob_Bi_TEST_arry" or die "can't open \n";
+
+	$str_tem="";
+	@arry_tem=();
+	@arrytwo_PhraseT_file=();
+	$PhraseT_length=0;
+	$PhraseT_length_count=0;
+
+	while($str_tem=<PhraseT>)    # it looks like 'french ||| en ||| fr-en pro ||| en-fr pro'
+		{
+			chomp($str_tem);
+			@arry_tem=split(/\s+\|\|\|\s+/, $str_tem);
+			push @arrytwo_PhraseT_file, [@arry_tem];
+			$PhraseT_length_count++;
+
+			@arry_tem=();
+			$str_tem="";
+
+		}
+	$PhraseT_length= $PhraseT_length_count;
+
+
+	for($i=0;$i<$PhraseT_length;$i++)
+		{
+			for($j=0;$j<4;$j++)
+				{
+					print TEST_PhraseT "$arrytwo_PhraseT_file[$i][$j]", ' || ';
+
+				}
+			print TEST_PhraseT "\n";
+		}
+
+
+close PhraseT;
+
+close TEST_PhraseT;
