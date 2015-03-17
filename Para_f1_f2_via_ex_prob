@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w  
 ########################################################################################################################################################################################
-## calculate the monolingual paraphrase prob from the phrase table. f1 ||| f2 ||| ex ||| prob
+## calculate the monolingual paraphrase prob from the phrase table  
 ## writen by Aaron Han @ ILLC, UvA                                                                                                                                                                             #####
 ########################################################################################################################################################################################
 
@@ -9,7 +9,7 @@
 open PhraseT,"<:encoding(utf8)","FR_EN_trans_Prob_Bi"; ## put the phrase table file
 
 ## open TEST_PhraseT,">:encoding(utf8)","FR_EN_trans_Prob_Bi_TEST_arry" or die "can't open \n";
-open FrMonoParaphrase,">:encoding(utf8)","FrMonoParaphrase_Prob" or die "can't open \n";
+open FrMonoParaphrase,">:encoding(utf8)","FrMonoParaphrase_Prob-f1-f2-ex-02" or die "can't open \n";
 
 	$str_tem="";
 	@arry_tem=();
@@ -59,11 +59,17 @@ open FrMonoParaphrase,">:encoding(utf8)","FrMonoParaphrase_Prob" or die "can't o
 							$tem_en_x=$arrytwo_PhraseT_file[$j][1];
 							$Prob_fr1_fr2= $arrytwo_PhraseT_file[$i][2]*$arrytwo_PhraseT_file[$j][3];
 #							$Prob_fr1_fr2=$Prob_fr1_fr2 + $arrytwo_PhraseT_file[$i][2]*$arrytwo_PhraseT_file[$j][3];
+							print FrMonoParaphrase $tem_fr_1, ' ||| ', $tem_fr_2, ' ||| ', $tem_en_x, ' ||| ', $Prob_fr1_fr2, "\n";
+
+
+							$tem_fr_2="";
+							$tem_en_x="";
+							$Prob_fr1_fr2=0;
 
 						}
 
 
-					print FrMonoParaphrase $tem_fr_1, ' ||| ', $tem_fr_2, ' ||| ', $tem_en_x, ' ||| ', $Prob_fr1_fr2, "\n";
+#					print FrMonoParaphrase $tem_fr_1, ' ||| ', $tem_fr_2, ' ||| ', $tem_en_x, ' ||| ', $Prob_fr1_fr2, "\n";
 
 
 
@@ -74,6 +80,8 @@ open FrMonoParaphrase,">:encoding(utf8)","FrMonoParaphrase_Prob" or die "can't o
 
 				}
 ##			print TEST_PhraseT "\n";
+			$tem_fr_1="";
+
 
 		}
 
@@ -92,3 +100,5 @@ open FrMonoParaphrase,">:encoding(utf8)","FrMonoParaphrase_Prob" or die "can't o
 close PhraseT;
 
 close FrMonoParaphrase;
+
+## close TEST_PhraseT;
