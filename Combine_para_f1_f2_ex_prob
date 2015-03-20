@@ -1,0 +1,132 @@
+#!/usr/bin/perl -w  
+########################################################################################################################################################################################
+## combine the monolingual paraphrase prob from the each pair with exact bridge 'f1 ||| f2 ||| ex ||| prob' => 'f1|||f2 ||| comb_prob' 
+## writen by Aaron Han @ ILLC, UvA                                                                                                                                                                             #####
+########################################################################################################################################################################################
+
+# # sorted_left-print
+
+# open PhraseT,"<:encoding(utf8)","FrMonoParaphrase_Prob-f1-f2-ex-02"; ## put the phrase table file
+# open PhraseT,"<:encoding(utf8)","sorted_FrMonoParaphrase"; ## put the phrase table file
+open PhraseT,"<:encoding(utf8)","sorted_filter_FrMonoParaphrase"; ## put the phrase table file
+
+## open TEST_PhraseT,">:encoding(utf8)","FR_EN_trans_Prob_Bi_TEST_arry" or die "can't open \n";
+# open FrMonoParaphrase,">:encoding(utf8)","sorted_FrMonoParaphrase_filter" or die "can't open \n";
+open FrMonoParaphrase,">:encoding(utf8)","sorted_filter_FrMonoParaphrase_comb" or die "can't open \n";
+
+
+	$str_tem="";
+	@arry_tem=();
+	@arry_store_compare=(fr1,fr2,combined,prob);
+	$Prob_fr1_fr2_comb=0;
+	# @arrytwo_PhraseT_file=();
+	# $PhraseT_length=0;
+	# $PhraseT_length_count=0;           
+
+	while($str_tem=<PhraseT>)    # it looks like 'french ||| en ||| fr-en pro ||| en-fr pro'
+		{
+			chomp($str_tem);
+			@arry_tem=split(/\s+\|\|\|\s+/, $str_tem);
+			if(($arry_store_compare[0] eq $arry_tem[0]) && (($arry_store_compare[1] eq $arry_tem[1])))  ## if 'now_f1==pre_f1; now_f2==pre_f2'
+				{
+					$Prob_fr1_fr2_comb= $Prob_fr1_fr2_comb + $arry_tem[3];
+
+				}
+			else  ## when new pair comes 'f1_new ||| f2_new', print stored combined prob; store new pair infor
+				{
+					print FrMonoParaphrase $arry_store_compare[0], ' ||| ', $arry_store_compare[1], ' ||| ', $Prob_fr1_fr2_comb, "\n";  ## print combined paraphrase prob
+					$Prob_fr1_fr2_comb=$arry_tem[3];  # new combined_prob begin with the first prob value
+					@arry_store_compare=@arry_tem; ## new stored arry is the newly coming one
+
+				}
+
+
+
+
+			# if($arry_tem[3] > 0.01)
+			# 	{
+			# 		print FrMonoParaphrase $arry_tem[0], ' ||| ', $arry_tem[1], ' ||| ', $arry_tem[2], ' ||| ', $arry_tem[3], "\n";
+
+			# 	}
+
+			# push @arrytwo_PhraseT_file, [@arry_tem];
+			# $PhraseT_length_count++;
+
+			@arry_tem=(); 
+			$str_tem="";
+
+		}
+# 	$PhraseT_length= $PhraseT_length_count;
+
+
+
+# 	$tem_fr_1="";
+# 	$tem_fr_2="";
+# 	$tem_en_x="";
+# 	$Prob_fr1_fr2=0;  ## given f1, the paraprhase prob of (f1, f2) pair, i.e. P(f2|f1);
+# #	@record_f1_arry=();   ## because in phrase table the f1 will continuously appear many times; we just select f1 once, with all other f2 prob;
+
+
+# 	for($i=0;$i<$PhraseT_length;$i++) 
+# 		{
+# 			$tem_fr_1=$arrytwo_PhraseT_file[$i][0];   ## from top to down, go through all possible fr
+			
+# 			# if(!( grep(/^$tem_fr_1/,@record_f1_arry) ))  ## if f1 has not been 
+# 			# 	{
+# 			# 		push @record_f1_arry, $tem_fr_1; 
+# 			# 	}
+
+			
+
+# 			for($j=0;$j<$PhraseT_length;$j++)
+# 				{
+# 					if(($arrytwo_PhraseT_file[$i][0] ne $arrytwo_PhraseT_file[$j][0]) && ($arrytwo_PhraseT_file[$i][1] eq $arrytwo_PhraseT_file[$j][1]))
+# 					## if F1!=F2, but E1==E2, then, there is paraphrase pair (f1, f2), and we shall calculate the prob
+# 						{
+# 							$tem_fr_2=$arrytwo_PhraseT_file[$j][0];  ## store the f2, with paraphrase prob between f1
+# 							$tem_en_x=$arrytwo_PhraseT_file[$j][1];
+# 							$Prob_fr1_fr2= $arrytwo_PhraseT_file[$i][2]*$arrytwo_PhraseT_file[$j][3];
+# #							$Prob_fr1_fr2=$Prob_fr1_fr2 + $arrytwo_PhraseT_file[$i][2]*$arrytwo_PhraseT_file[$j][3];
+# 							print FrMonoParaphrase $tem_fr_1, ' ||| ', $tem_fr_2, ' ||| ', $tem_en_x, ' ||| ', $Prob_fr1_fr2, "\n";
+
+
+# 							$tem_fr_2="";
+# 							$tem_en_x="";
+# 							$Prob_fr1_fr2=0;
+
+# 						}
+
+
+# #					print FrMonoParaphrase $tem_fr_1, ' ||| ', $tem_fr_2, ' ||| ', $tem_en_x, ' ||| ', $Prob_fr1_fr2, "\n";
+
+
+
+
+
+
+# ##					print TEST_PhraseT "$arrytwo_PhraseT_file[$i][$j]", ' || ';
+
+# 				}
+# ##			print TEST_PhraseT "\n";
+# 			$tem_fr_1="";
+
+
+# 		}
+
+
+	# for($i=0;$i<$PhraseT_length;$i++)    ## this is to test the stroed two dimention arry of phrase table infor
+	# 	{
+	# 		for($j=0;$j<4;$j++)
+	# 			{
+	# 				print TEST_PhraseT "$arrytwo_PhraseT_file[$i][$j]", ' || ';
+
+	# 			}
+	# 		print TEST_PhraseT "\n";
+	# 	}
+
+
+close PhraseT;
+
+close FrMonoParaphrase;
+
+## close TEST_PhraseT;
